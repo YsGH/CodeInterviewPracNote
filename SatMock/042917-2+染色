@@ -34,7 +34,7 @@ public class solution {
     q.offer(node);
     blue.add(node);
     while (!q.isEmpty()) {
-      GraphNode topNode = q.pull();
+      GraphNode topNode = q.poll();
       for (GraphNode n : topNode.neighbors) {
         if (blue.contains(n)) {
           return false;
