@@ -1,0 +1,51 @@
+Problem description:
+  A graph can be said to be 'two-colorable' if each vertex in the graph can be assigned a color such that no two adjacent vertices
+  in the graph are assigned the same color. Returns true if the graph cantaining startNode can be colored with only two colors, and
+  false otherwise.
+
+
+Solution:
+
+public class GraphNode {
+  public int key;
+  public List<GraphNode> neighbors;
+  public GraphNode(int key) {
+    this.key = key;
+    this.neighbors = new ArrayList<GraphNode>();
+  }
+}
+
+public class solution {
+  public boolean canBeColored(List<GraphNode> graph) {
+    Set<GraphNode> blue = new HashSet<>();
+    Set<GraphNode> red = new HashSet<>();
+    for (GraphNode node: graph) {
+      if (!blue.contains(node) && !red.contains(node)) {
+        if (!bfsColor(node, blue, red)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  
+  private boolean bfsColor(GraphNode node, Set<GraphNode> blue, Set<GraphNode> red) {
+    Deque<GraphNode> q = new ArrayDeque<>();
+    q.offer(node);
+    blue.add(node);
+    while (!q.isEmpty()) {
+      GraphNode topNode = q.pull();
+      for (GraphNode n : topNode.neighbors) {
+        if (blue.contains(n)) {
+          return false;
+        }
+        q.offer(n);
+        red.add(n);
+      }
+      Set<GraphNode> temp = blue;
+      blue = red;
+      red = temp;
+    }
+    return true;
+  }
+}
