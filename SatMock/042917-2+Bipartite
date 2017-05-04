@@ -49,3 +49,6 @@ public class solution {
     return true;
   }
 }
+
+follow up:
+  do three colors 
