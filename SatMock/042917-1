@@ -1,0 +1,30 @@
+#hashmap
+#hashset
+#string
+
+question: isomorphic words
+
+follow up: given n words, return isomorphic groups
+	Set<Set<String>> getIsoGroups(List<String> words) 
+
+solution 1: use two hashmaps -> {A.charAt(i): B.charAt(i)}, {}
+solution 2: use one hashmap + one hashset
+solution 3: use two hashmaps/ two [256] int array {A.charAt(i): the previous index of this char in String A} {B...}
+
+class Solution {
+	public boolean isIsomorphic(String A, String B) {
+		if (A == null || B == null || A.length() != B.length()) {
+			return false;
+		}
+		int[] cA = new int[256];
+		int[] cB = new int[256];
+		for (int i = 0; i < A.length(); i++) {
+			if (cA[A.charAt(i)] != cB[B.charAt(i)]) {
+				return false;
+			}
+			cA[A.charAt(i)] = i+1;
+			cB[B.charAt(i)] = i+1;
+		}
+		return true;
+	}
+}
