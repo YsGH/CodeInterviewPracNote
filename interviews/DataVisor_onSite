@@ -1,0 +1,32 @@
+1, 青蛙过河:
+有一条河, e.g. y=y0; y=y1; 和圆形的荷叶，(x, y, r);
+求青蛙能不能沿着荷叶过河，和通过荷叶数最少的路径，bfs
+
+2, Leetcode 99.
+Follow up, so now you have a increasing int array you get from the inorder traverse of the tree
+how to find these two elements?
+
+// The interviewer keeps providing me some hints for me to get the code below. 
+int[] findMistake(int[] array) {
+    int[] res=new int[2];
+    for (int i=0; i<array.length; i++) {
+        if (array[i]>array[i+1]) {
+            res[0]=i;
+        }
+        if (array[i+1]>array[i]) {
+            res[1]=i+1;
+        }
+    }
+    return res;
+}
+
+3, There is a box, with n balls with k different colors, each color c have ni balls, i from 1 to k
+n1+n2+...+nk=n;
+
+Get a function draw(), to draw a random ball from the box. return its color
+with putback
+1, optimaze draw time o(1), space need o(n)
+2, have space o(k), draw()? I made a solution time o(k), then, o(logk), binary search
+without putback
+3, HashMap, time o(k), how to get o(logk), did not find the answer.
+I mentioned I need a tree like data structure to update the info, like trie tree, Segment tree is the answer. The interview told me that
