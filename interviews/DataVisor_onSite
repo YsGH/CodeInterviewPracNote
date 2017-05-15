@@ -1,3 +1,8 @@
+Behavior, there are no much Behavior questions are asked
+I spend a lot of time introducing my compiler and website project to the first interviewer, who is also very new I think,
+so it turns out we run of out time for the other two interviewers
+and most of the time is used for coding questions...
+
 1, 青蛙过河:
 有一条河, e.g. y=y0; y=y1; 和圆形的荷叶，(x, y, r);
 求青蛙能不能沿着荷叶过河，和通过荷叶数最少的路径，bfs
@@ -6,7 +11,8 @@
 Follow up, so now you have a increasing int array you get from the inorder traverse of the tree
 how to find these two elements?
 
-// The interviewer keeps providing me some hints for me to get the code below. 
+// The interviewer keeps providing me some hints for me to get the code optimized below.
+// The question is not hard, but the interviewer want to get to this clean code, only compare once for each element
 int[] findMistake(int[] array) {
     int[] res=new int[2];
     for (int i=0; i<array.length; i++) {
@@ -30,3 +36,15 @@ with putback
 without putback
 3, HashMap, time o(k), how to get o(logk), did not find the answer.
 I mentioned I need a tree like data structure to update the info, like trie tree, Segment tree is the answer. The interview told me that
+no real code in the end
+
+
+4, the CTO's questions
+Assume you have a very large log file,
+time T, user U
+time is unique, try to find the lasted two time pair from the same user
+the question is easy, HashMap will do the job
+It seems that the CTO is impressed by me since I write the code almost perfectly on the white board, the APIs used are all correct
+the code is clean with 'the right syntax sugar', (like for each stead of for int=0...)
+she asked me that your research is totally irrelavant with code, how do you know how to write code like this.
+

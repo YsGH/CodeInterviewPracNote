@@ -1,0 +1,45 @@
+1, remove none letter character to check whether a string is parlidrome
+
+e.g.: A man, a plan, a canal. Panama! return true
+trivial, the student did a very very bad job...
+Character.toUpperCase() or lower can help you.
+
+2, 
+https://en.wikipedia.org/wiki/Leet
+给你一个pair list 比如: l=1，e=3，t=7
+然后给你一个词，比eleet，print所有正确的表达:
+31337, e13et...
+dfs
+没啥好写的
+
+3, Rainbow sort
+The one provide the best solution immediately, interviewer said one cannot do that if have not seen the problem before
+try to act as an normal person...
+
+4, Print all subset
+e.g
+input "abc", output a, b, c, ab, ac, bc, abc
+这个哥们不停装b，很烦，莫装b，而且做得也不怎么样其实
+
+我想到的是这个dfs的做法，并没有pre-order traverse那个树，感觉这样做好写又好懂
+标准dfs，我就写了一下
+
+List<String> allsub(String s) {
+    List<String> res=new ArrayList<>();
+    StringBuilder cur=new StringBuilder();
+    dfs(res, cur, s, 0);
+    return res;
+}
+
+void dfs (List<String> res, StringBuilder cur, String s, int level) {
+    if (level==s.length()) {
+        res.add(cur.toString());
+        return;
+    }
+    for (int i=level; i<s.length(); i++) {
+        cur.append(s.charAt(i));
+        dfs(res, cur, s, i);
+        cur.remove(cur.length());
+    }
+    return;
+}

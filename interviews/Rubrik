@@ -1,0 +1,4 @@
+Give a number,
+return the next int which is larger than it and is a parlidrome
+e.g. 12345 -> 12421
+54321 -> 54345
