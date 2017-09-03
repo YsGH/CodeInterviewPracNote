@@ -1,0 +1,2 @@
+点菜，菜价格为double，问如何正好花完手里的钱
+解法：把菜单价格*100转成整数，题目转换成leetcode 40.Combination Sum II（https://leetcode.com/problems/combination-sum-ii/?tab=Description）
