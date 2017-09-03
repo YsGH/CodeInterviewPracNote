@@ -1,0 +1,9 @@
+你和你的兄弟都有一个wishlist，找出和你相似度最高的。follow up是给出一个max值，找出你的buddy的wishlist里不在你的wishlist里的最多max个城市，根据buddy和你的重合程度来排序
+
+例如：
+你的wishlist是 a,b,c,d
+
+buddy1 的wishlist 是 a,b,e,f, 有两个和你的一样，所以是你的buddy
+buddy2 的wishlist 是 a,c,d,g, 有三个和你的一样，也是你的budy
+问题是输出一个size最多为max的推荐城市列表。当size为10时，buddy1和buddy2的wishlist中不在你的wishlist中的城市都可以加入推荐中，因为buddy2的重合度更高，所以先输出buddy2中的，所以推荐为 g,e,f 当size为2时，推荐是g,e 或 g,f
+代码我只写了重合度排名，推荐的话可以按照相似度从高到低遍历，找出不在你的wishlist中的输出，输出过程中可以标记是否已经输出
