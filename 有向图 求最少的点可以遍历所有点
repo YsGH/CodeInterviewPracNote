@@ -1,0 +1,4 @@
+（https://instant.1point3acres.com/thread/201190，https://instant.1point3acres.com/thread/197716）
+
+解法，scc（strongly connected component）缩点 + 拓扑排序，太尼玛复杂了。。
+解scc用了Kosaraju算法， 拓扑排序
