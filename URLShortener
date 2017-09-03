@@ -1,0 +1,5 @@
+（https://instant.1point3acres.com/thread/196339）
+
+看描述好像是url里的id如果有某些位置大小写换了会导致原来的url decode有问题，需要重写encode方法，回溯改某些位的大小写判断
+
+http://massivealgorithms.blogspot.com/2017/07/url-shortener-airbnb.html
