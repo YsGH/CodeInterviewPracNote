@@ -18,4 +18,9 @@ or will throw an exception (or return null) if not, implement a new method decod
 which takes a string and returns the decoded int id. 
 
 
-数据库中 stingkljJJ324hjkS
+数据库中 sting 和 int 有一一对应关系，可以encode decode， 并且是case sensitive。 e.g. kljJJ324hjkS decode to 848662
+但是如果string 中大小写被改变，就没有办法decode。
+现在给出decode程序，要求实现decodeFind，能够将大小写被改过，没办法decode的string，找到原本正确的decoded int
+
+解法：用recursive method，把string的每个字母大小写两种情况，试最后得到的每个string是否能decode
+
