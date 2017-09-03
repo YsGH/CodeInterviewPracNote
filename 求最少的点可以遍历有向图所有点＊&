@@ -9,6 +9,6 @@ https://instant.1point3acres.com/thread/197716）
 3. 遍历所有点，如果有一个点不在visited set里，加到最后要return的set，从那个点开始dfs把那个环里的点也加到visited set里。
 
 想topological sort，然后逆序访问？
-注意有环的情况！
+注意有环的情况！e.g.0->1->0, 2->3->2->1，
 
 ＊学习一下scc，Kosaraju算法＊
