@@ -1,0 +1,14 @@
+（https://instant.1point3acres.com/thread/201190，
+https://instant.1point3acres.com/thread/197716）
+
+解法，scc（strongly connected component）缩点 + 拓扑排序，太尼玛复杂了。。
+解scc用了Kosaraju算法， 拓扑排序
+
+1. 第一遍找到所有入度为0的点并加到最后要return的set里。 记一个visited set，一开始为空。 
+2. 从第一遍找到的入度为0的点开始dfs并把所有见过的点加到set里。 
+3. 遍历所有点，如果有一个点不在visited set里，加到最后要return的set，从那个点开始dfs把那个环里的点也加到visited set里。
+
+想topological sort，然后逆序访问？
+注意有环的情况！
+
+＊学习一下scc，Kosaraju算法＊
