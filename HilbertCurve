@@ -1,3 +1,7 @@
 Hilbert Curve（http://bit-player.org/extras/hilbert/hilbert-construction.html）
 Hilbert曲线可以无限阶下去，从1阶开始，落在一个矩阵里，让你写个function，三个参数（x,y,阶数），return 这个点（x,y）是在这阶curve里从原点出发的第几步
 
+https://zh.wikipedia.org/wiki/%E5%B8%8C%E7%88%BE%E4%BC%AF%E7%89%B9%E6%9B%B2%E7%B7%9A
+http://massiveprogramming.blogspot.com/2016/08/hilbert-curve.html
+
+每张图可以分为4个区域，找到该点所在区域，然后递归往下做
