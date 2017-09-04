@@ -1,0 +1,141 @@
+Problem: given a list of leaf nodes in a pyramid ，and a map which indicates what's the possible parent node given a left and right node.
+Return true if the one of leaf node could turn into the root node, Otherwise, return false.
+
+Example:
+
+     root
+     / \
+    X   X
+   /\  /\
+   X  X  X
+  / \/ \/ \
+ A   B  C  D
+Map:
+
+        right: A |  B   |   C | D
+left---------------------------------
+A             B |A or C|   D | A
+B             D |B or C|   A |
+C                              B
+D
+Note:1. If left child is B, right child is A, the parent node could be B or C
+
+     root
+     / \
+    X   X
+   /\  /\
+ A/C  A  B
+  / \/ \/ \
+ A   B  C  D
+
+
+package LeetCode;
+import java.util.*;
+
+public class StringPyramidsTransitionMatrix {
+	public boolean canBuilderPyramid(String roots, 
+			Map<Character, Map<Character, List<Character>>> parentsMap) {
+		// corner
+		
+		 List<Character> list = new ArrayList<>();
+		 for (int i = 0; i < roots.length(); i++) {
+			 list.add(roots.charAt(i));
+		 }
+		 return getPyramidRoot(list, parentsMap);
+	}
+	
+	private boolean getPyramidRoot(List<Character> list, 
+			Map<Character, Map<Character, List<Character>>> parentsMap) {
+		// corner
+		if (list.size() <= 1) {
+			return true;
+		}
+		
+		List<List<Character>> nextList = new ArrayList<>();
+		List<List<Character>> possibleList = new ArrayList<>();
+		for (int i = 0; i < list.size()-1; i++) {
+			Map<Character, List<Character>> leftMap = parentsMap.get(list.get(i));
+			if (leftMap == null) {
+				return false;
+			}
+			List<Character> ps = leftMap.get(list.get(i+1));
+			if (ps == null) {
+				return false;
+			}
+			nextList.add(ps);
+		}
+		getAllPossibleList(nextList, possibleList, new ArrayList<Character>(), 0);
+		
+		for (int i = 0; i < possibleList.size(); i++) {
+			if (getPyramidRoot(possibleList.get(i), parentsMap)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void getAllPossibleList(List<List<Character>> nextList, 
+			List<List<Character>> possibleList, List<Character> curList, int step) {
+		if (step == nextList.size()) {
+			List<Character> copyList = new ArrayList<>();
+			for (int i = 0; i < curList.size(); i++) {
+				copyList.add(curList.get(i));
+			}
+			possibleList.add(copyList);
+			return;
+		}
+		
+		List<Character> curNodes = nextList.get(step);
+		for (int i = 0; i < curNodes.size(); i++) {
+			curList.add(curNodes.get(i));
+			getAllPossibleList(nextList, possibleList, curList, step+1);
+			curList.remove(curList.size()-1);
+		}
+	}
+	
+	public static void main(String[] args) {
+		StringPyramidsTransitionMatrix sp = new StringPyramidsTransitionMatrix();
+		Map<Character, Map<Character, List<Character>>> parentsMap = new HashMap<>();
+		
+		List<Character> AA = new ArrayList<>();
+		List<Character> AB = new ArrayList<>();
+		List<Character> AC = new ArrayList<>();
+		List<Character> AD = new ArrayList<>();
+		List<Character> BA = new ArrayList<>();
+		List<Character> BB = new ArrayList<>();
+		List<Character> BC = new ArrayList<>();
+		List<Character> CD = new ArrayList<>();
+		
+		AA.add('B');
+		AB.add('A');
+//		AB.add('C');
+//		AC.add('D');
+//		AD.add('A');
+//		BA.add('D');
+		BB.add('B');
+		BB.add('C');
+		BC.add('A');
+		CD.add('B');
+		
+		Map<Character, List<Character>> rightMapA = new HashMap<>();
+		rightMapA.put('A', AA);
+		rightMapA.put('B', AB);
+		rightMapA.put('C', AC);
+		rightMapA.put('D', AD);
+		parentsMap.put('A', rightMapA);
+		
+		Map<Character, List<Character>> rightMapB = new HashMap<>();
+		rightMapB.put('A', BA);
+		rightMapB.put('B', BB);
+		rightMapB.put('C', BC);
+		parentsMap.put('B', rightMapB);
+		
+		Map<Character, List<Character>> rightMapC = new HashMap<>();
+		rightMapC.put('D', CD);
+		parentsMap.put('C', rightMapC);
+		
+		System.out.println(sp.canBuilderPyramid("ABCD", parentsMap));
+	}
+}
+
+
