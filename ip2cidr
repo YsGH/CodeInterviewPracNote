@@ -1,0 +1,94 @@
+给出一个ipv4的range，找出最少的cidr可以覆盖这个range内的所有ip。
+
+参考：
+背景介绍https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
+这个是个online转化工具http://www.ipaddressguide.com/cidr
+大概的思路是group as much IPs as you can.
+描述起来还真的麻烦呢，建议跑几个case，就理解了
+code: http://stackoverflow.com/questions/33443914/how-to-convert-ip-address-range-to-cidr-in-java
+
+解释： ——代表end-start能覆盖到的二进制位
+https://zh.wikipedia.org/wiki/%E6%97%A0%E7%B1%BB%E5%88%AB%E5%9F%9F%E9%97%B4%E8%B7%AF%E7%94%B1#/media/File:IP_Address_Match.svg
+
+start：xxxxxxx100000
+
+end： xxxxxx——-这种情况下，先找出可以覆盖住xxxxxxx100000~xxxxxxx111111的cidr，start变为xxxxxxx100000 + 100000
+end： xxxxxxxxx—-这种情况下，先找出可以覆盖住xxxxxxx100000~xxxxxxx101111的cidr，start变为xxxxxxx100000 + 10000
+
+https://instant.1point3acres.com/thread/203681
+http://www.cnblogs.com/yinzhengjie/p/6698600.html
+
+package LeetCode;
+
+import java.util.*;
+
+public class IP2CIDR {
+	public static void main(String[] args) {
+        System.out.println(range2cidrlist("5.232.255.250","5.232.255.254").toString());
+        
+        System.out.println(range2cidrlist("5.104.109.160", "5.104.109.191").toString());
+    }
+
+    public static List<String> range2cidrlist( String startIp, String endIp ) {         
+        long start = ipToLong(startIp);         
+        long end = ipToLong(endIp);           
+
+        ArrayList<String> pairs = new ArrayList<String>();         
+        while ( end >= start ) {             
+            byte maxsize = 32;             
+            while ( maxsize > 0) {                 
+                long mask = CIDR2MASK[ maxsize -1 ];                 
+                long maskedBase = start & mask;                 
+
+                if ( maskedBase != start ) {                     
+                    break;                 
+                }                 
+
+                maxsize--;             
+            }               
+            double x = Math.log( end - start + 1) / Math.log( 2 );             
+            byte maxdiff = (byte)( 32 - Math.floor( x ) );             
+            if ( maxsize < maxdiff) {                 
+                maxsize = maxdiff;             
+            }             
+            String ip = longToIP(start);             
+            pairs.add( ip + "/" + maxsize);             
+            start += Math.pow( 2, (32 - maxsize) );         
+        }         
+        return pairs;     
+    }       
+
+    public static final int[] CIDR2MASK = new int[] { 0x00000000, 0x80000000,             
+        0xC0000000, 0xE0000000, 0xF0000000, 0xF8000000, 0xFC000000,             
+        0xFE000000, 0xFF000000, 0xFF800000, 0xFFC00000, 0xFFE00000,             
+        0xFFF00000, 0xFFF80000, 0xFFFC0000, 0xFFFE0000, 0xFFFF0000,             
+        0xFFFF8000, 0xFFFFC000, 0xFFFFE000, 0xFFFFF000, 0xFFFFF800,             
+        0xFFFFFC00, 0xFFFFFE00, 0xFFFFFF00, 0xFFFFFF80, 0xFFFFFFC0,             
+        0xFFFFFFE0, 0xFFFFFFF0, 0xFFFFFFF8, 0xFFFFFFFC, 0xFFFFFFFE,             
+        0xFFFFFFFF };       
+
+    private static long ipToLong(String strIP) {         
+        long[] ip = new long[4];         
+        String[] ipSec = strIP.split("\\.");         
+        for (int k = 0; k < 4; k++) {             
+            ip[k] = Long.valueOf(ipSec[k]);         
+        }         
+
+        return (ip[0] << 24) + (ip[1] << 16) + (ip[2] << 8) + ip[3];     
+    }       
+
+    private static String longToIP(long longIP) {         
+        StringBuffer sb = new StringBuffer("");         
+        sb.append(String.valueOf(longIP >>> 24));         
+        sb.append(".");         
+        sb.append(String.valueOf((longIP & 0x00FFFFFF) >>> 16));         
+        sb.append(".");         
+        sb.append(String.valueOf((longIP & 0x0000FFFF) >>> 8));         
+        sb.append(".");         
+        sb.append(String.valueOf(longIP & 0x000000FF));   
+
+        return sb.toString();     
+    }
+    
+}
+
