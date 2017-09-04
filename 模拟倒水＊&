@@ -1,2 +1,83 @@
 给一个直方图里面不同位置倒水的问题， 输入是倒水位置和倒水的量，要求打印出倒水后的样子
 http://www.1point3acres.com/bbs/thread-216807-1-1.html
+
+
+package LeetCode;
+
+import java.util.Arrays;
+
+public class WaterFlow {
+	public double[] simulateWaterFlow(int[] terrian, int position, int water) {
+		//corner
+		
+		double[] result = new double[terrian.length];
+		for (int i = 0; i < terrian.length; i++) {
+			result[i] = terrian[i] + 0.0;
+		}
+		
+		int w = 1;
+		while (w <= water) {
+			result = dropUnitWater(result, position);
+			w++;
+			System.out.println(Arrays.toString(result));
+		}
+		return result;
+	}
+	
+	private double[] dropUnitWater(double[] terrian, int position) {
+		int right = position;
+		while (right+1 < terrian.length && terrian[right+1] <= terrian[right]) {
+			right++;
+		}
+		
+		int left = position;
+		while (left-1 >= 0 && terrian[left-1] <= terrian[left]) {
+			left--;
+		}
+		
+		// [2, 2, 2, 2],  [3, 1, 2]
+		if (terrian[left] == terrian[position] && terrian[right] == terrian[position]) {
+			double dh = 1/(right - left + 1.0);
+			for (int i = left; i <= right; i++) {
+				terrian[i] += dh;
+			}
+			return terrian;
+		}
+		// 如果出现小数情况的话，这种解法是不对的！！！
+		
+		// [1, 3, 4, 2] 
+		double water = 1.0;
+		if (left != position && right != position) {
+			water = 0.5;
+		}
+		
+		// [1, 2, 3, 4]  [2, 2, 3, 4]
+		if (left != position && terrian[left] < terrian[position]) {
+			int lr = left;
+			while (lr <= position && terrian[lr] == terrian[left]) {
+				lr++;
+			}
+			for (int i = left; i < lr; i++) {
+				terrian[i] += water/(lr - left);
+			}
+		}
+		if (right != position && terrian[right] < terrian[position]) {
+			int rl = right;
+			while (rl >= position && terrian[rl] == terrian[right]) {
+				rl--;
+			}
+			for (int i = right; i > rl; i--) {
+				terrian[i] += water/(right - rl);
+			}
+		}
+		return terrian;
+	}
+	
+	
+	public static void main(String[] args) {
+		WaterFlow wf = new WaterFlow();
+		int[] terrian = new int[]{3, 4, 8, 1, 2, 7, 5};
+		double[] result = wf.simulateWaterFlow(terrian, 2, 50);
+		System.out.println(Arrays.toString(result));
+	}
+}
