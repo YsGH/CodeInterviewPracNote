@@ -1,1 +1,174 @@
+Given an array of words and a length L, format the text such that each line has exactly L characters 
+and is fully (left and right) justified.
+You should pack your words in a greedy approach; 
+that is, pack as many words as you can in each line. Pad extra spaces ' ' when necessary so that each line has exactly L characters.
+Extra spaces between words should be distributed as evenly as possible. 
+If the number of spaces on a line do not divide evenly between words, 
+the empty slots on the left will be assigned more spaces than the slots on the right.
 
+For the last line of text, it should be left justified and no extra space is inserted between words.
+
+For example,
+words: ["This", "is", "an", "example", "of", "text", "justification."]
+L: 16.
+
+Return the formatted lines as:
+[
+   "This    is    an",
+   "example  of text",
+   "justification.  "
+]
+Note: Each word is guaranteed not to exceed L in length.
+
+click to show corner cases.
+
+Corner Cases:
+A line other than the last line might contain only one word. What should you do in this case?
+In this case, that line should be left-justified.
+
+[""]
+0
+
+[""]
+3
+
+["a","b","c","d","e"]
+1
+
+["What","must","be","shall","be."]
+12
+
+
+
+class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        // corner
+        
+        List<String> result = new ArrayList<>();
+        List<String> wordsInLine = new ArrayList<>();
+        int i = 0;
+        while (i < words.length) {
+            int count = 0;
+            int start = i;
+            while (i < words.length && count <= maxWidth+1) {
+                count += words[i].length() + 1;
+                i++;
+            }
+            if (count > maxWidth+1) {
+                i--;
+            } 
+            result.add(getLine(words, start, i-1, maxWidth));
+        }
+        return result;
+    }
+    
+    private String getLine(String[] words, int start, int end, int width){
+        // corner
+        
+        if (start == end) {
+            StringBuilder sbld = new StringBuilder();
+            sbld.append(words[start]);
+            for (int i = 0; i < width - words[start].length(); i++) {
+                sbld.append(" ");
+            }
+            return new String(sbld);
+        }
+        
+        if (end == words.length-1) {
+            StringBuilder sbld = new StringBuilder();
+            for (int i = start; i < end; i++ ) {
+                sbld.append(words[i]);
+                sbld.append(" ");
+            }
+            sbld.append(words[end]);
+            int spaceLeft = width - sbld.length();
+            for (int i = 0; i < spaceLeft; i++) {
+                sbld.append(" ");
+            }
+            return new String(sbld);
+        }
+        
+        int count = 0;
+        for (int i = start; i <= end; i++) {
+            count += words[i].length();
+        }
+        int space = (width - count)/(end - start);
+        int extra = (width - count)%(end - start);
+        
+        StringBuilder sbld = new StringBuilder();
+        for (int i = start; i <end; i++) {
+            sbld.append(words[i]);
+            for (int j = 0; j < space; j++) {
+                sbld.append(" ");
+            }
+            if (extra > 0) {
+                sbld.append(" ");
+                extra--;
+            }
+        }
+        sbld.append(words[end]);
+        return new String(sbld);
+    }
+}
+
+
+
+public class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        // assume on word length larger than maxWidth
+        
+        int i = 0; 
+        int j = 0; 
+        List<String> output = new ArrayList<>();
+        while (j < words.length) {
+            int wordsLen = 0;
+            while (j < words.length && wordsLen+words[j].length() <= maxWidth) {
+                wordsLen += (words[j].length()+1);
+                j++;
+            } 
+            // System.out.println(i+ ": " + j+ ": "+ wordsLen);
+            
+            output.add(outputALine(words, i, j, maxWidth));
+            i = j;
+        }
+        return output;
+    }
+    
+    private String outputALine(String[] words, int s, int e, int maxWidth) {
+        StringBuilder sbld = new StringBuilder();
+        if (e - s == 1) {
+            sbld.append(words[s]);
+            for (int i = words[s].length(); i < maxWidth; i++) {
+                sbld.append(' ');
+            }
+            return new String(sbld);
+        }
+        int numOfLetter = 0;
+        for (int i = s; i < e; i++) {
+            numOfLetter += words[i].length();
+        }
+        int numOfWords = e - s;
+        int space = (maxWidth - numOfLetter)/(numOfWords-1);
+        int extra = (maxWidth - numOfLetter)%(numOfWords-1);
+        if (e == words.length) {
+            space = 1;
+            extra = 0;
+        }
+        
+        for (int i = s; i < e-1; i++) {
+            sbld.append(words[i]);
+            for (int j = 0; j < space; j++) {
+                sbld.append(' ');
+            }
+            if (extra > 0) {
+                sbld.append(' ');
+                extra--;
+            }
+        }
+        sbld.append(words[e-1]);
+        while (sbld.length() < maxWidth) {
+            sbld.append(' ');
+        }
+        return new String(sbld);
+    }
+}
