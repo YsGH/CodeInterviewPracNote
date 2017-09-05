@@ -11,4 +11,13 @@ https://instant.1point3acres.com/thread/197716）
 想topological sort，然后逆序访问？
 注意有环的情况！e.g.0->1->0, 2->3->2->1，
 
-＊学习一下scc，Kosaraju算法＊
+https://www.byvoid.com/zhs/blog/scc-tarjan
+http://blog.miskcoo.com/2016/07/tarjan-algorithm-strongly-connected-components
+
+Kosaraju算法求强连通分量：
+http://blog.csdn.net/dm_vincent/article/details/8554244
+
+
+保证正确的解法，1 找到所有强连通分量 2 入度为0/反向图出度为0的点的个数 既为答案。
+https://www.bbsmax.com/A/B0zq2RB8Jv/
+https://www.bbsmax.com/A/obzbyVRMdE/
