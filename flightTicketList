@@ -1,0 +1,15 @@
+每一项包括departure, arrival, cost，然后给一个整数k, 表示最多允许k次中转。
+给定起始地点A，到达地点B, 要求输出从A到B的最小花费，最多k次中转。
+
+Given a flight itinerary consisting of starting city, destination city, and ticket price (2d list) - 
+find the optimal price flight path to get from start to destination. (A variation of Dynamic Programming Shortest Path)
+mincost of flight from start to end if allowed at most k connections. 
+比如： A->B, 100, B->C, 100, A->C, 500. 如果k是1的话，起点终点是A，C的话，那A->B->C最好
+
+Bellman-Ford Algorithm
+
+类似pd思想，i 次connections到v点的最小cost ＝ (i－1次connections 到u点 + cost from u to v) minimun of all possible u
+1, 地点A，到达地点B。转折0次，则到达除A外的所有点的cost为无穷大。
+2, 转折点每增加一次，扫描图上所有边，如果能使该边到达点的cost减小（cost（v， i－1）＋ cost（wv）），则更新到达点cost(w, i) 并记录父节点
+   注意更新时要分开w(i-1)和 w(i) （preCost，cost）不要搞混 
+3, 增加k次后，找到B点cost
