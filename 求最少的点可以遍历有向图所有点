@@ -8,7 +8,7 @@ https://instant.1point3acres.com/thread/197716）
 2. 从第一遍找到的入度为0的点开始dfs并把所有见过的点加到set里。 
 3. 遍历所有点，如果有一个点不在visited set里，加到最后要return的set，从那个点开始dfs把那个环里的点也加到visited set里。
 
-想topological sort，然后逆序访问？
+想topological sort，然后逆序访问？－－－ this does not work. see example below
 注意有环的情况！e.g.0->1->0, 2->3->2->1，
 
 https://www.byvoid.com/zhs/blog/scc-tarjan
@@ -17,7 +17,188 @@ http://blog.miskcoo.com/2016/07/tarjan-algorithm-strongly-connected-components
 Kosaraju算法求强连通分量：
 http://blog.csdn.net/dm_vincent/article/details/8554244
 
+Kosaraju的主要步骤：
+对G求解Reverse Post-Order，即上文中的”伪拓扑排序“
+对G进行转置得到GR
+按照第一步得到的集合中顶点出现的顺序，对GR调用DFS得到若干颗搜索树
+每一颗搜索树就代表了一个强连通分量
+
+证明：设在图GR中，调用DFS(s)能够到达顶点v，那么顶点s和v是强连通的。
+两个顶点如果是强连通的，那么彼此之间都有一条路径可达，因为DFS(s)能够达到顶点v，因此从s到v的路径必然存在。现在关键就是需要证明在GR中从v到s也是存在一条路径的，也就是要证明在G中存在s到v的一条路径。
+而之所以DFS(s)能够在DFS(v)之前被调用，是因为在对G获取ReversePost-Order序列时，s出现在v之前，这也就意味着，v是在s之前加入该序列的(因为该序列使用栈作为数据结构，先加入的反而会在序列的后面)。因此根据DFS调用的递归性质，DFS(v)应该在DFS(s)之前返回，而有两种情形满足该条件：
+DFS(v) START -> DFS(v) END -> DFS(s) START -> DFS(s) END
+DFS(s) START -> DFS(v) START -> DFS(v) END -> DFS(s) END
+是因为而根据目前的已知条件，GR中存在一条s到v的路径，即意味着G中存在一条v到s的路径，而在第一种情形下，调用DFS(v)却没能在它返回前递归调用DFS(s)，这是和G中存在v到s的路径相矛盾的，因此不可取。故情形二为唯一符合逻辑的调用过程。而根据DFS(s) START -> DFS(v) START可以推导出从s到v存在一条路径。
+所以从s到v以及v到s都有路径可达，证明完毕。
 
 保证正确的解法，1 找到所有强连通分量 2 入度为0/反向图出度为0的点的个数 既为答案。
 https://www.bbsmax.com/A/B0zq2RB8Jv/
 https://www.bbsmax.com/A/obzbyVRMdE/
+
+
+package LeetCode;
+import java.util.*;
+
+public class LeastPointsTraversalGraph {
+
+	public int getLeastNumOfPointTraverseGraph(List<Node> nodes) {
+		// corner		
+		//get scc
+		List<Set<Character>> scc = new ArrayList<>();
+		Map<Character, Node> grMap = new HashMap<>();
+		kosarajuGetScc(nodes, grMap, scc);
+//		System.out.println("scc number: "+ scc.size());
+		return getZeroInDegreeScc(scc, grMap);		
+	}
+	
+	private int getZeroInDegreeScc(List<Set<Character>> scc, Map<Character, Node> grMap) {
+		// corner
+		int zeroOut = 0;
+		for (Set<Character> component: scc) {
+			boolean noOut = true;
+			for (Character c: component) {
+				Node node = grMap.get(c);
+				for (Node next: node.nexts) {
+					if (!component.contains(next.key)) {
+						noOut = false;
+					}
+				}
+			}
+			if (noOut) {
+				zeroOut++;
+			}
+		}
+		return zeroOut;
+	}
+	
+	private void kosarajuGetScc(List<Node> nodes, Map<Character, Node> gr, List<Set<Character>> scc) {
+		// get pseudo topo sort
+		List<Node> pTopo = getPseudoTopo(nodes);
+//		for (Node n: pTopo) {
+//			System.out.println("node in pTopo: "+ n.key + "nexts: "+ n.nexts.toString());
+//		}
+		// get graph transpose 
+		getTransposeGraph(nodes, gr);
+//		for (Node n: gr.values()) {
+//			System.out.println("node in gr: "+ n.key + "nexts: "+ n.nexts.toString());
+//		}
+		
+		// get scc
+		getScc(pTopo, gr, scc);
+		System.out.println("scc: "+ scc.size());
+	}
+	
+	private List<Node> getPseudoTopo(List<Node> nodes) {
+		// corner
+		
+		List<Node> reverseTopo = new ArrayList<>();
+		Set<Character> visited = new HashSet<>(); 
+		for (Node node: nodes) {
+			if (!visited.contains(node.key)) {
+				dfsTopo(node, visited, new HashSet<Character>(), reverseTopo);
+			}
+		}
+		
+//		List<Node> topo = new ArrayList<>();
+//		for (int i = reverseTopo.size()-1; i >= 0; i--) {
+//			topo.add(reverseTopo.get(i));
+//		}
+		return reverseTopo;
+	}
+	
+	private void dfsTopo(Node curr, Set<Character> visited, 
+			Set<Character> visiting, List<Node> reverseTopo) {
+		if (visited.contains(curr.key) || visiting.contains(curr.key)) {
+			return;
+		}
+		
+		visiting.add(curr.key);
+		List<Node> nexts = curr.nexts;
+		for (Node node: nexts) {
+			dfsTopo(node, visited, visiting, reverseTopo);
+		}
+		visited.add(curr.key);
+		reverseTopo.add(curr);
+	}
+	
+	private Map<Character, Node> getTransposeGraph(List<Node> nodes, Map<Character, Node> nodesMap) {
+		// corner
+		
+//		List<Node> gr = new ArrayList<>();
+//		Map<Character, Node> nodesMap = new HashMap<>();
+		for (Node node: nodes) {
+			Node grNode = nodesMap.get(node.key);
+			if (grNode == null) {
+				grNode = new Node(node.key);
+				nodesMap.put(node.key, grNode);
+//				gr.add(grNode);
+			}
+			for (Node next: node.nexts) {
+				Node grNext = nodesMap.get(next.key);
+				if (grNext == null) {
+					grNext = new Node(next.key);
+					nodesMap.put(grNext.key, grNext);
+//					gr.add(grNext);
+				}
+				grNext.nexts.add(grNode);
+			}
+		}
+		
+		return nodesMap;
+	}
+	
+	private void getScc(List<Node> pTopo, Map<Character, Node> gr, List<Set<Character>> scc) {
+		// corner
+		
+		Set<Character> visited = new HashSet<>();
+//		List<Set<Node>> scc = new ArrayList<>();
+		for (Node node: pTopo) {
+			if (!visited.contains(node.key)) {
+				Set<Character> component = new HashSet<>();
+				dfsGetScc(node, gr, visited, 
+						new HashSet<Character>(), component);
+				scc.add(component);
+				System.out.println("component: " + component.toString());
+			}
+		}
+	}
+	
+	private void dfsGetScc(Node curr, Map<Character, Node> grMap, Set<Character> visited, 
+			Set<Character> visiting, Set<Character> component) {
+		if (visited.contains(curr) || visiting.contains(curr)) {
+			return;
+		}
+		
+		visiting.add(curr.key);
+		for (Node next: grMap.get(curr.key).nexts) {
+			dfsGetScc(next, grMap, visited, visiting, component);
+		}
+		visited.add(curr.key);
+		component.add(curr.key);
+	}
+	
+	public static void main(String[] args) {
+		LeastPointsTraversalGraph lp = new LeastPointsTraversalGraph();
+		Node n1 = new Node('a');
+		Node n2 = new Node('b');
+		Node n3 = new Node('c');
+		n1.nexts.add(n2);
+//		n2.nexts.add(n3);
+		
+		List<Node> nodes = new ArrayList<>();
+		nodes.add(n1);
+		nodes.add(n2);
+		nodes.add(n3);
+		
+		System.out.println(lp.getLeastNumOfPointTraverseGraph(nodes));
+	}
+}
+
+class Node{
+	Character key;
+	List<Node> nexts;
+	public Node(Character key) {
+		this.key = key;
+		this.nexts = new ArrayList<>();
+	}
+}
