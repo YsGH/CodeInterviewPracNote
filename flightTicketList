@@ -13,3 +13,115 @@ Bellman-Ford Algorithm
 2, 转折点每增加一次，扫描图上所有边，如果能使该边到达点的cost减小（cost（v， i－1）＋ cost（wv）），则更新到达点cost(w, i) 并记录父节点
    注意更新时要分开w(i-1)和 w(i) （preCost，cost）不要搞混 
 3, 增加k次后，找到B点cost
+
+package LeetCode;
+import java.util.*;
+
+public class FlightTicketsList {
+	public List<String> getMinCostPath(String[] tickets, String start, String end, int k) {
+		// corner
+		Map<String, Des> graph = new HashMap<>();
+		getTicketsGraph(tickets, graph);
+		
+		Des startDes = graph.get(start);
+		startDes.preCost = 0;
+		startDes.cost = 0;
+		
+		for (int i = 0; i <= k; i++) {
+			for (Map.Entry<String, Des> entry: graph.entrySet()) {
+				Des cur = entry.getValue();
+				List<Des> tos = cur.tos;
+				List<Integer> costs = cur.costs;
+				
+				for (int j = 0; j < tos.size(); j++) {
+					Des to = tos.get(j);
+					if (cur.preCost != Integer.MAX_VALUE && cur.preCost + costs.get(j) < to.preCost) {
+						to.cost = cur.preCost + costs.get(j);
+						to.parent = cur;
+					}
+				}
+			}
+			
+			for (Map.Entry<String, Des> entry: graph.entrySet()) {
+				Des cur = entry.getValue();
+				cur.cost = cur.preCost;
+			}
+		}
+		
+		Des endDes = graph.get(end);
+		
+		List<String> result = new ArrayList<>();
+		while (endDes != null) {
+			result.add(endDes.name);
+			endDes = endDes.parent;
+		}
+		Collections.reverse(result);
+		return result;
+	}
+	
+	public static void main(String[] args) {
+		FlightTicketsList ft = new FlightTicketsList();
+
+		String t1 = "A->B,100";
+		String t2 = "B->C,100";
+		String t3 = "A->C,500";
+		
+		String[] tickets = new String[] {t1, t2, t3};
+		System.out.println(ft.getMinCostPath(tickets, "A", "C", 1).toString());
+	}
+	
+	private void getTicketsGraph(String[] tickets, Map<String, Des> graph) {
+		for (String ticket: tickets) {
+			String[] info = parseTicket(ticket);
+			String from = info[0];
+			String to = info[1];
+			int cost = Integer.valueOf(info[2]);
+			Des fromDes = graph.get(from);
+			Des toDes = graph.get(to);
+			if (fromDes == null) {
+				fromDes = new Des(from);
+				graph.put(from, fromDes);
+			}
+			if (toDes == null) {
+				toDes = new Des(to);
+				graph.put(to, toDes);
+			}
+			fromDes.tos.add(toDes);
+			fromDes.costs.add(cost); // assume no duplicate tickets;	
+		}
+	}
+	
+	private String[] parseTicket(String ticket) {
+		int i = 0;
+		while (ticket.charAt(i) != '-') {
+			i++;
+		}
+		String from = ticket.substring(0, i);
+		i += 2;
+		int toStart = i;
+		while (ticket.charAt(i) != ',') {
+			i++;
+		}
+		String to = ticket.substring(toStart, i);
+		
+		String cost = ticket.substring(i+1);
+		return new String[]{from, to, cost};
+	}
+}
+
+class Des{
+	String name;
+	List<Des> tos;
+	List<Integer> costs;
+	Des parent;
+	int preCost;
+	int cost;
+	public Des(String name) {
+		this.name = name;
+		tos = new ArrayList<Des>();
+		costs = new ArrayList<Integer>();
+		preCost = Integer.MAX_VALUE;
+		cost = Integer.MAX_VALUE;
+	}
+}
+
