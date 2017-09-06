@@ -4,3 +4,114 @@
 循环merge，然后遍历空闲区间（ps：另一种解法很简单，参考：这题最简单的方法就是把所有区间都拆成两个点，
 然后排序，然后扫描，每次碰到一个点如果是左端点就把busy_employees加1，否则减1，等到每次busy_employees为0时就是一个新的区间。
 这样复杂度O(MlogM)，M是总共区间数。）
+
+package LeetCode;
+
+import java.util.*;
+
+public class MeetingRoomI {
+	// merge and scan
+	public List<Meeting> getFreeTime(List<Meeting> meetings) {
+		// corner
+		if (meetings.size() <= 1) {
+			return new ArrayList<Meeting>();
+		}
+		Collections.sort(meetings, new Comparator<Meeting>(){
+			@Override
+			public int compare(Meeting m1, Meeting m2) {
+				if (m1.start == m2.start) {
+					return 0;
+				}
+				return m1.start < m2.start ? -1:1;
+			}
+		});
+		
+		List<Meeting> mergedList = new ArrayList<>();
+		int newStart = meetings.get(0).start;
+		int curEnd = meetings.get(0).end;
+		for (int i = 1; i < meetings.size(); i++) {
+			if (meetings.get(i).start > curEnd) {
+				mergedList.add(new Meeting(newStart, curEnd));
+				newStart = meetings.get(i).start;
+				curEnd = meetings.get(i).end;
+			} else {
+				curEnd = curEnd>meetings.get(i).end? curEnd:meetings.get(i).end;
+			}
+		}
+		mergedList.add(new Meeting(newStart, curEnd));
+		
+		List<Meeting> freeList = new ArrayList<>();
+		for (int i = 0; i < mergedList.size()-1; i++) {
+			freeList.add(new Meeting(mergedList.get(i).end, mergedList.get(i+1).start));
+		}
+		return freeList;
+	}
+	
+	public List<Meeting> getFreeTimeP(List<Meeting> meetings) {
+		// corner
+		List<Meeting> freeList = new ArrayList<>();
+		List<Integer> timePoints = new ArrayList<>();
+		for (Meeting m: meetings) {
+			timePoints.add(m.start);
+			timePoints.add(-1*m.end);
+		}
+		
+		Collections.sort(timePoints, new Comparator<Integer>(){
+			@Override
+			public int compare(Integer i1, Integer i2) {
+				if (Math.abs(i1) == Math.abs(i2)) {
+					return 0;
+				}
+				return Math.abs(i1) < Math.abs(i2) ? -1:1;
+			}
+		});
+//		System.out.println(timePoints.toString());
+		int overlap = 0;
+		int lastEnd = -1;
+		for (Integer p : timePoints) {
+			if (p >= 0) {
+				if (overlap == 0 && lastEnd != -1) {
+					freeList.add(new Meeting(lastEnd, p));
+				}
+				overlap++;
+			} else {
+				if (overlap == 1) {
+					lastEnd = -1 * p;
+				}
+				overlap--;
+			}
+		}
+		return freeList;
+	}
+	
+	
+	public static void main(String[] args) {
+		MeetingRoomI mr = new MeetingRoomI();
+//		[[0, 30],[5, 10],[15, 20]]
+		Meeting m1 = new Meeting(0, 30);
+		Meeting m2 = new Meeting(5, 10);
+		Meeting m3 = new Meeting(50, 52);
+		List<Meeting> meetings = new ArrayList<>();
+		meetings.add(m1);
+		meetings.add(m3);
+		meetings.add(m2);
+		List<Meeting> rsl = mr.getFreeTimeP(meetings);
+		for (Meeting m : rsl) {
+			System.out.println(m.toString());
+		}
+	}
+}
+
+class Meeting{
+	int start;
+	int end;
+	public Meeting(int start, int end) {
+		this.start = start;
+		this.end = end;
+	}
+	
+	public String toString() {
+		return start + " -> " + end + ", ";
+	}
+}
+
