@@ -3,3 +3,112 @@ implement一个queue，但是要求用int[]储存，并且一次生成的int[]�
 标准做法是用linkedlist
 
 http://www.1point3acres.com/bbs/forum.php?mod=viewthread&tid=215975&extra=page%3D1%26filter%3Dsortid%26sortid%3D311%26searchoption%5B3046%5D%5Bvalue%5D%3D37%26searchoption%5B3046%5D%5Btype%5D%3Dradio%26sortid%3D311
+
+package LeetCode;
+import java.util.*;
+
+public class ArrayImplementedQueue {
+	
+	int size;
+	List<int[]> arrayList = new LinkedList<>();
+	int headIdx = 0;
+	int tailIdx = 5;
+	
+	public ArrayImplementedQueue() {
+		size = 0;
+	}
+	
+	public boolean offer(int input) {
+		if (tailIdx == 5) {
+			int[] newArray = new int[5];
+			arrayList.add(newArray);
+			tailIdx = 0;
+		}
+		arrayList.get(arrayList.size()-1)[tailIdx] = input;
+		tailIdx++;
+		size++;
+		return true;
+	}
+	
+	public Integer peek() {
+		if (size <= 0) {
+			return null;
+		}
+		int[] headArray = arrayList.get(0);
+		return headArray[headIdx];
+	}
+	
+	public Integer poll() {
+		if (size <= 0) {
+			return null;
+		}
+		Integer result = arrayList.get(0)[headIdx];
+		if (headIdx == 4) {
+			arrayList.remove(0);
+			headIdx = 0;
+		} else {
+			headIdx++;
+		}
+		size--;
+		return result;
+	}
+	
+	public void print() {
+		System.out.println("queue size is: " + size);
+		
+		if (size == 0) {
+			return;
+		}
+		
+		if (arrayList.size() == 1) {
+			for (int i = headIdx; i < tailIdx; i++) {
+				System.out.print(arrayList.get(0)[i] +  ", ");
+			}
+			System.out.println();
+			return;
+		}
+		
+		for (int i = headIdx; i < 5; i++) {
+			System.out.print(arrayList.get(0)[i] +  ", ");
+		}
+		
+		for (int i = 1; i < arrayList.size()-2; i++) {
+			int[] array = arrayList.get(i);
+			for (int j = 0; j < 5; j++) {
+				System.out.print(array[j] +  ", ");
+			}
+		}
+		
+		for (int i = 0; i < tailIdx; i++) {
+			System.out.print(arrayList.get(arrayList.size()-1)[i] +  ", ");
+		}
+		System.out.println();
+	}
+	
+	public static void main(String[] args) {
+		ArrayImplementedQueue ai = new ArrayImplementedQueue();
+		ai.offer(34);
+		ai.print();
+		ai.offer(3);
+		ai.offer(4);
+		ai.offer(12);
+		ai.print();
+		ai.offer(1);
+		ai.offer(5);
+		ai.print();
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		System.out.println("poll result: " + ai.poll());
+		ai.print();
+		ai.offer(1);
+		ai.offer(2);
+		ai.offer(3);
+		ai.offer(4);
+		ai.print();
+	}
+}
