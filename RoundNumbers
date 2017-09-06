@@ -13,3 +13,52 @@ Example2:
 input = 30.9, 2.4, 3.9
 output = 31 2 4
 先将所有floor(x)加起来统计出如果所有都floor的话还差多少，按照ceil以后需要加的价格排序，贪心取最小的补齐即可。
+
+package LeetCode;
+import java.util.*;
+
+public class RoundNumbers {
+	public int[] getRoundNumbers(double[] decimals) {
+		// corner
+		
+		int num = decimals.length;
+		int[] result = new int[num];
+		double decimalsSum = 0;
+		int resultSum = 0;
+		for (int i = 0; i < decimals.length; i++) {
+			result[i] = (int)Math.floor(decimals[i]); 
+			decimalsSum += decimals[i];
+			resultSum += result[i];
+		}
+		System.out.println(decimalsSum + ", " + resultSum);
+		PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>(){
+			@Override 
+			public int compare(int[] i1, int[] i2) {
+				if (i1[1] == i2[1]) {
+					return 0;
+				}
+				return i1[1] < i2[1] ? -1:1;
+			}
+		});
+		
+		
+		for (int i = 0; i < num; i++) {
+			pq.offer(new int[]{i, (int)Math.abs(decimals[i] - result[i])});
+		}
+		
+		System.out.println(Math.round(decimalsSum));
+		
+		for (int i = 0; i < (Math.round(decimalsSum) - resultSum); i++) {
+			int[] adjust = pq.poll();
+			result[adjust[0]]++;
+		}
+		
+		return result;
+	}
+	
+	public static void main(String[] args) {
+		RoundNumbers rn = new RoundNumbers();
+		double[] price = new double[]{30.9, 2.4, 3.9};
+		System.out.println(Arrays.toString(rn.getRoundNumbers(price)));
+	}
+}
