@@ -1,2 +1,62 @@
 二分查找
 思路就是：先找在INT_MIN和INT_MAX的median（0？），然后读large file of integers，找出比这个数小的个数是否有一半，然后调整二分的边界
+
+package LeetCode;
+import java.util.*;
+
+
+public class MedianFromLargeFileOfIntegers {
+	public int getMedian(List<Integer> largeFile) {
+		// corner
+		
+		long lower = Integer.MIN_VALUE;
+		long upper = Integer.MAX_VALUE;
+		
+		while(lower < upper) {
+			long mid = upper - (upper - lower)/2;
+			long s = 0;
+			long l = 0;
+			long e = 0;
+			for (Integer i: largeFile) {
+				if (i > mid) {
+					l++;
+				} else if (i < mid) {
+					s++;
+				} else {
+					e++;
+				}
+			}
+			
+			if (l > s) {
+				if (l <= s+e) {
+					return (int)mid;
+				}
+				lower = mid;
+			} else if (l < s) {
+				if (l >= s+e) {
+					return (int)mid;
+				}
+				upper = mid;
+			} else {
+				if (e != 0) {
+					return (int)mid;
+				}
+				upper = mid;
+			}
+		}
+		return (int)lower;
+	}
+	
+	
+	public static void main(String[] args) {
+		MedianFromLargeFileOfIntegers mf = new MedianFromLargeFileOfIntegers();
+//		int[] file = new int[]{1, 2, 8, 234, 46, 578, 10000000, 453, -4536, 2};
+		int[] file = new int[]{2};
+		List<Integer> list = new ArrayList<>();
+		for (int i: file) {
+			list.add(i);
+		}
+		
+		System.out.println(mf.getMedian(list));
+	}
+}
