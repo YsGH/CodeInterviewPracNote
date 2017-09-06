@@ -1,4 +1,126 @@
 九宫格，一共8个方块，从1-8，一个方块空出来，然后打乱之后通过SLIDE还原，
 这个题要推广到N宫格，先实现这个游戏，然后对于一个任意的BOARD，要你把他解出来
 
+package LeetCode;
+import java.util.*;
+
+public class SlidingGame {
+	public void getSlidingGameResult(int[][] input) {
+		// corner
+		
+		Board start = new Board(input);
+		Board target = new Board(new int[][]{{1,2,3},{4,5,6},{7,8,0}});
+		
+		Map<Board, Board> parents = new HashMap<>();
+		
+		Deque<Board> queue = new ArrayDeque<>();
+		queue.offer(start);
+		parents.put(start, null);
+		while(!queue.isEmpty()) {
+			Board cur = queue.pop();
+			if (cur.equals(target)) {
+				break;
+			}
+			
+			List<Board> nexts = cur.getNextSteps();
+			for (Board next: nexts) {
+				if (!parents.containsKey(next)) {
+					parents.put(next, cur);
+					queue.offer(next);
+				}
+			}
+		}
+
+		Board p = target;
+		while (p != null) {
+			p.print();
+			System.out.println("->");
+			p = parents.get(p);
+		}
+		
+	}
+	
+	public static void main(String[] args) {
+		SlidingGame sg = new SlidingGame();
+//		int[][] input = new int[][]{{2, 1, 5},{4, 7, 0},{9, 8, 3}};
+		int[][] input = new int[][]{{1,2,0},{4,5,3},{7,8,6}};
+		sg.getSlidingGameResult(input);
+	}
+}
+
+class Board {
+	int[][] board = new int[3][3];
+	public Board(int[][] board) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				this.board[i][j] = board[i][j]; 
+			}
+		}
+	}
+	
+	public List<Board> getNextSteps() {
+		int sX = 0;
+		int sY = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (board[i][j] == 0) {
+					sX = i;
+					sY = j;
+					break;
+				}
+			}
+		}
+		
+		List<Board> result = new ArrayList<>();
+		int[] dx = new int[] {-1, 0, 1, 0};
+		int[] dy = new int[] {0, 1, 0, -1};
+		
+		for (int i = 0; i < 4; i++) {
+			int x = sX + dx[i];
+			int y = sY + dy[i];
+			if (x >= 0 && x < 3 && y >= 0 && y < 3) {
+				board[sX][sY] = board[x][y];
+				board[x][y] = 0;
+				Board next = new Board(board);
+				board[x][y] = board[sX][sY];
+				board[sX][sY] = 0;
+				result.add(next);
+			}
+		}
+		return result;
+	}
+	
+	public void print() {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				System.out.print(board[i][j] + ", ");
+			}
+			System.out.println();
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		Board b = (Board)o;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (b.board[i][j] != board[i][j]) {
+					return false;
+				} 
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int code = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				code = code << 3 + board[i][j];
+			}
+		}
+		return code;
+	}
+}
 
