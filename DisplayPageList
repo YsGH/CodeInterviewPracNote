@@ -3,3 +3,59 @@ http://www.1point3acres.com/bbs/thread-209681-1-1.html
 
 input List<String> "host_ui, listing_id, score, city" e.g. "1, 23, 303.2, SanFrancisco"
 可能会用到list iterator 及remove 操作
+
+package LeetCode;
+import java.util.*;
+//input List<String> "host_ui, listing_id, score, city" e.g. "1, 23, 303.2, SanFrancisco"
+
+public class DisplayPageList {
+	public List<List<String>> getDisplayPageList(List<String> list, int pageSize) {
+		// corner
+		List<List<String>> pageList = new ArrayList<>();
+		if (pageSize <= 0 || list == null || list.size() == 0) {
+			return pageList;
+		}
+		
+		int num = list.size();
+		for (int i = 0; i <= (num-1)/pageSize; i++) {
+			Set<String> hostIds = new HashSet<>();
+			List<String> page = new ArrayList<>();
+			for (int j = 0; j < list.size() && page.size() < pageSize; j++) {
+				String hostId = getHostId(list.get(j));
+				if (hostIds.contains(hostId)) {
+					continue;
+				}
+				page.add(list.get(j));
+				hostIds.add(hostId);
+				list.remove(j--); 
+//				System.out.println(page.toString());
+			}
+			for (int j = 0; j < list.size() && page.size() < pageSize; j++) {
+				page.add(list.get(j));
+				list.remove(j--);
+			}
+			pageList.add(page);
+		}
+		
+		return pageList;
+	}
+	
+	private String getHostId(String input) {
+		String[] info = input.split(", ");
+		return info[0];
+	}
+	
+	public static void main(String[] args) {
+		DisplayPageList dp = new DisplayPageList();
+		List<String> input = new ArrayList<>();
+		input.add("1, 23, 303.2, SanFrancisco");
+		input.add("3, 23, 302.2, SanFrancisco");
+		input.add("1, 23, 301.2, SanFrancisco");
+		input.add("1, 23, 300.2, SanFrancisco");
+		
+		List<List<String>> result = dp.getDisplayPageList(input, 0);
+		for (List<String> page: result) {
+			System.out.println(page.toString());
+		}
+	}
+}
